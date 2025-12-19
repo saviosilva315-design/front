@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Pedidos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <h1>Sistema de Pedidos</h1>
+
+    <h3>Criar novo pedido</h3>
+    <input id="titulo" placeholder="Título">
+    <input id="descricao" placeholder="Descrição">
+    <button onclick="criarPedido()">Criar</button>
+
+    <h3>Pedidos cadastrados</h3>
+    <div id="lista"></div>
+
+    <h3>Cadastrar Fornecedor</h3>
+    <input id="fornecedorNome" placeholder="Nome do fornecedor">
+    <button onclick="salvarFornecedor()">Salvar</button>
+    <p id="msgFornecedor"></p>
+
+    <h3>Fornecedores cadastrados</h3>
+    <div id="listaFornecedores"></div>
+
+<script src="script.js"></script>
+</body>
+</html>

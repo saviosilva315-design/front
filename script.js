@@ -58,8 +58,3 @@ function carregarFornecedores() {
 }
 
 carregarFornecedores();
-    .then(() => {
-        document.getElementById("msgFornecedor").innerText = "Fornecedor salvo!";
-        document.getElementById("fornecedorNome").value = "";
-    });
-}

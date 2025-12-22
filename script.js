@@ -99,8 +99,10 @@ async function carregarFornecedores() {
         item.className = "list-group-item";
 
         item.innerHTML = `
-            <strong>${fornecedor.nome}</strong>
-            <br><small>Contato: ${fornecedor.contato || "Não informado"}</small>
+            item.innerHTML = `
+    <strong>${fornecedor.nome}</strong><br>
+    <small>Contato: ${fornecedor.contato ? fornecedor.contato : "Não informado"}</small>
+`;
 
             <button class="btn btn-danger btn-sm float-end ms-2" onclick="excluirFornecedor(${fornecedor.id})">
                 Excluir
@@ -255,3 +257,4 @@ document.getElementById("fornecedorContato").addEventListener("input", function 
 carregarPedidos();
 carregarFornecedores();
 carregarProdutosParaPedido();
+

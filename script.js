@@ -1,3 +1,6 @@
+// ------------------------
+// PEDIDOS
+// ------------------------
 function criarPedido() {
     const titulo = document.getElementById("titulo").value;
     const descricao = document.getElementById("descricao").value;
@@ -15,6 +18,13 @@ function criarPedido() {
     });
 }
 
+function excluirPedido(id) {
+    fetch(`https://meuback-ulyh.onrender.com/pedidos/${id}`, {
+        method: "DELETE"
+    })
+    .then(() => carregarPedidos());
+}
+
 function carregarPedidos() {
     fetch("https://meuback-ulyh.onrender.com/pedidos")
         .then(res => res.json())
@@ -22,13 +32,21 @@ function carregarPedidos() {
             const div = document.getElementById("lista");
             div.innerHTML = "";
             pedidos.forEach(p => {
-                div.innerHTML += `<p><strong>${p.titulo}</strong> - ${p.descricao}</p>`;
+                div.innerHTML += `
+                    <p>
+                        <strong>${p.titulo}</strong> - ${p.descricao}
+                        <button onclick="excluirPedido(${p.id})">Excluir</button>
+                    </p>
+                `;
             });
         });
 }
 
 carregarPedidos();
 
+// ------------------------
+// FORNECEDORES
+// ------------------------
 function salvarFornecedor() {
     const nome = document.getElementById("fornecedorNome").value;
 
@@ -45,15 +63,62 @@ function salvarFornecedor() {
     });
 }
 
+function excluirFornecedor(id) {
+    fetch(`https://meuback-ulyh.onrender.com/fornecedores/${id}`, {
+        method: "DELETE"
+    })
+    .then(() => carregarFornecedores());
+}
+
+// ------------------------
+// PRODUTOS
+// ------------------------
+function adicionarProduto(fornecedorId) {
+    const nome = prompt("Nome do produto:");
+    if (!nome) return;
+
+    const preco = prompt("Preço do produto:");
+    if (!preco) return;
+
+    fetch(`https://meuback-ulyh.onrender.com/fornecedores/${fornecedorId}/produtos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome, preco })
+    })
+    .then(() => carregarFornecedores());
+}
+
+// ------------------------
+// LISTAGEM DE FORNECEDORES
+// ------------------------
 function carregarFornecedores() {
     fetch("https://meuback-ulyh.onrender.com/fornecedores")
         .then(res => res.json())
-        .then(lista => {
-            const div = document.getElementById("listaFornecedores");
-            div.innerHTML = "";
-            lista.forEach(f => {
-                div.innerHTML += `<p>${f.nome}</p>`;
-            });
+        .then(fornecedores => {
+
+            fetch("https://meuback-ulyh.onrender.com/produtos")
+                .then(r => r.json())
+                .then(produtos => {
+
+                    const div = document.getElementById("listaFornecedores");
+                    div.innerHTML = "";
+
+                    fornecedores.forEach(f => {
+                        const produtosDoFornecedor = produtos.filter(p => p.fornecedorId === f.id);
+
+                        div.innerHTML += `
+                            <div style="margin-bottom: 20px;">
+                                <strong>${f.nome}</strong>
+                                <button onclick="excluirFornecedor(${f.id})">Excluir</button>
+                                <button onclick="adicionarProduto(${f.id})">Adicionar Produto</button>
+
+                                <ul>
+                                    ${produtosDoFornecedor.map(p => `<li>${p.nome} - R$ ${p.preco}</li>`).join("")}
+                                </ul>
+                            </div>
+                        `;
+                    });
+                });
         });
 }
 

@@ -77,7 +77,7 @@ function carregarFornecedores() {
                     <div style="margin-bottom:15px;">
                         <p>
                             <strong>${f.nome}</strong>
-                            <button onclick="excluirFornecedor(${f.id})">Excluir</button>
+                            <button onclick="excluirFornecedor(${f.id})">Excluir fornecedor</button>
                         </p>
 
                         <div id="produtos-${f.id}"></div>
@@ -125,8 +125,21 @@ function carregarProdutos(fornecedorId) {
         .then(produtos => {
             const lista = produtos.filter(p => p.fornecedorId == fornecedorId);
             const div = document.getElementById(`produtos-${fornecedorId}`);
+
             div.innerHTML = "<strong>Produtos:</strong><ul>" 
-                + lista.map(p => `<li>${p.nome}</li>`).join("") 
+                + lista.map(p => 
+                    `<li>
+                        ${p.nome}
+                        <button onclick="excluirProduto(${p.id}, ${fornecedorId})">
+                            Excluir
+                        </button>
+                    </li>`
+                ).join("") 
                 + "</ul>";
         });
+}
+
+function excluirProduto(id, fornecedorId) {
+    fetch(`${BASE_URL}/produtos/${id}`, { method: "DELETE" })
+        .then(() => carregarProdutos(fornecedorId));
 }

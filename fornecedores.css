@@ -50,3 +50,43 @@ button {
     width: calc(33.333% - 20px);
     box-sizing: border-box;
 }
+.supplier-products {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.product-mini-card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    width: 150px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.product-mini-card h4 {
+    margin: 0 0 5px 0;
+    font-size: 14px;
+}
+
+.product-mini-card p {
+    margin: 0 0 10px 0;
+    font-size: 12px;
+    color: #555;
+}
+
+.product-mini-card button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.product-mini-card button:hover {
+    background-color: #c82333;
+}

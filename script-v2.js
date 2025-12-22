@@ -21,6 +21,10 @@ function aplicarMascaraTelefone(input) {
     input.value = v;
 }
 
+document.getElementById("fornecedorContato").addEventListener("input", function () {
+    aplicarMascaraTelefone(this);
+});
+
 /* ======================== CARREGAR PEDIDOS ======================== */
 
 async function carregarPedidos() {
@@ -35,16 +39,11 @@ async function carregarPedidos() {
         item.className = "list-group-item";
 
         item.innerHTML = `
-            <strong>${pedido.titulo}</strong><br>
-            ${pedido.descricao}<br>
-            <small>Produto ID: ${pedido.produtoId || "Nenhum"}</small><br>
-            <small>Fornecedor ID: ${pedido.fornecedorId || "Nenhum"}</small>
-
-            <button class="btn btn-danger btn-sm float-end" onclick="excluirPedido(${pedido.id})">
-                Excluir
-            </button>
+            <strong>Pedido ${pedido.id}</strong><br>
+            Produto: ${pedido.produtoId}<br>
+            Fornecedor: ${pedido.fornecedorId}
+            <button class="btn btn-danger btn-sm float-end" onclick="excluirPedido(${pedido.id})">Excluir</button>
         `;
-
         lista.appendChild(item);
     });
 }
@@ -52,30 +51,21 @@ async function carregarPedidos() {
 /* ======================== CRIAR PEDIDO ======================== */
 
 async function criarPedido() {
-    const titulo = document.getElementById("titulo").value;
-    const descricao = document.getElementById("descricao").value;
     const produtoId = document.getElementById("selectProdutoPedido").value;
     const fornecedorId = document.getElementById("selectFornecedorPedido").value;
+
+    if (!produtoId || !fornecedorId) {
+        alert("Selecione produto e fornecedor.");
+        return;
+    }
 
     await fetch(`${API_URL}/pedidos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            titulo,
-            descricao,
-            status: "aberto",
-            produtoId,
-            fornecedorId
-        })
+        body: JSON.stringify({ produtoId, fornecedorId })
     });
 
     carregarPedidos();
-
-    document.getElementById("titulo").value = "";
-    document.getElementById("descricao").value = "";
-    document.getElementById("selectProdutoPedido").value = "";
-    document.getElementById("selectFornecedorPedido").innerHTML =
-        '<option value="">Selecione um fornecedor</option>';
 }
 
 /* ======================== EXCLUIR PEDIDO ======================== */
@@ -85,52 +75,16 @@ async function excluirPedido(id) {
     carregarPedidos();
 }
 
-/* ======================== CARREGAR FORNECEDORES ======================== */
-
-async function carregarFornecedores() {
-    const resposta = await fetch(`${API_URL}/fornecedores`);
-    const fornecedores = await resposta.json();
-
-    const lista = document.getElementById("listaFornecedores");
-    lista.innerHTML = "";
-
-    fornecedores.forEach(fornecedor => {
-        const item = document.createElement("li");
-        item.className = "list-group-item";
-
-        item.innerHTML = `
-            item.innerHTML = `
-    <strong>${fornecedor.nome}</strong><br>
-    <small>Contato: ${fornecedor.contato ? fornecedor.contato : "Não informado"}</small>
-`;
-
-            <button class="btn btn-danger btn-sm float-end ms-2" onclick="excluirFornecedor(${fornecedor.id})">
-                Excluir
-            </button>
-
-            <div class="mt-3">
-                <input id="produtoNome-${fornecedor.id}" class="form-control mb-2"
-                    placeholder="Nome do produto">
-
-                <button class="btn btn-secondary btn-sm" onclick="salvarProduto(${fornecedor.id})">
-                    Adicionar Produto
-                </button>
-
-                <ul id="produtos-${fornecedor.id}" class="list-group mt-2"></ul>
-            </div>
-        `;
-
-        lista.appendChild(item);
-
-        carregarProdutosDoFornecedor(fornecedor.id);
-    });
-}
-
 /* ======================== SALVAR FORNECEDOR ======================== */
 
 async function salvarFornecedor() {
     const nome = document.getElementById("fornecedorNome").value;
     const contato = document.getElementById("fornecedorContato").value;
+
+    if (!nome || !contato) {
+        alert("Preencha nome e contato.");
+        return;
+    }
 
     await fetch(`${API_URL}/fornecedores`, {
         method: "POST",
@@ -142,21 +96,45 @@ async function salvarFornecedor() {
     document.getElementById("fornecedorContato").value = "";
 
     carregarFornecedores();
-    carregarProdutosParaPedido();
+    carregarProdutos();
 }
 
-/* ======================== EXCLUIR FORNECEDOR ======================== */
+/* ======================== CARREGAR FORNECEDORES ======================== */
 
-async function excluirFornecedor(id) {
-    await fetch(`${API_URL}/fornecedores/${id}`, { method: "DELETE" });
-    carregarFornecedores();
-    carregarProdutosParaPedido();
+async function carregarFornecedores() {
+    const resposta = await fetch(`${API_URL}/fornecedores`);
+    const fornecedores = await resposta.json();
+
+    const lista = document.getElementById("listaFornecedores");
+    lista.innerHTML = "";
+
+    const select = document.getElementById("selectFornecedorPedido");
+    select.innerHTML = '<option value="">Selecione um fornecedor</option>';
+
+    fornecedores.forEach(f => {
+        const item = document.createElement("li");
+        item.className = "list-group-item";
+
+        item.innerHTML = `
+            <strong>${f.nome}</strong><br>
+            <small>Contato: ${f.contato || "Não informado"}</small>
+        `;
+
+        lista.appendChild(item);
+
+        const option = document.createElement("option");
+        option.value = f.id;
+        option.textContent = f.nome;
+        select.appendChild(option);
+    });
 }
 
-/* ======================== PRODUTOS ======================== */
+/* ======================== SALVAR PRODUTO ======================== */
 
 async function salvarProduto(fornecedorId) {
     const nome = document.getElementById(`produtoNome-${fornecedorId}`).value;
+
+    if (!nome) return;
 
     await fetch(`${API_URL}/produtos`, {
         method: "POST",
@@ -166,95 +144,42 @@ async function salvarProduto(fornecedorId) {
 
     document.getElementById(`produtoNome-${fornecedorId}`).value = "";
 
-    carregarProdutosDoFornecedor(fornecedorId);
-    carregarProdutosParaPedido();
+    carregarProdutos();
+    carregarFornecedores();
 }
 
-async function carregarProdutosDoFornecedor(fornecedorId) {
-    const resposta = await fetch(`${API_URL}/produtos`);
-    const produtos = await resposta.json();
+/* ======================== CARREGAR PRODUTOS PARA SELECT ======================== */
 
-    const lista = document.getElementById(`produtos-${fornecedorId}`);
-    lista.innerHTML = "";
-
-    produtos
-        .filter(p => p.fornecedorId == fornecedorId)
-        .forEach(produto => {
-            const item = document.createElement("li");
-            item.className = "list-group-item";
-
-            item.innerHTML = `
-                ${produto.nome}
-                <button class="btn btn-danger btn-sm float-end"
-                    onclick="excluirProduto(${produto.id}, ${fornecedorId})">
-                    Excluir
-                </button>
-            `;
-
-            lista.appendChild(item);
-        });
-}
-
-async function excluirProduto(id, fornecedorId) {
-    await fetch(`${API_URL}/produtos/${id}`, { method: "DELETE" });
-    carregarProdutosDoFornecedor(fornecedorId);
-    carregarProdutosParaPedido();
-}
-
-/* ======================== PRODUTOS PARA PEDIDO ======================== */
-
-async function carregarProdutosParaPedido() {
+async function carregarProdutos() {
     const resposta = await fetch(`${API_URL}/produtos`);
     const produtos = await resposta.json();
 
     const select = document.getElementById("selectProdutoPedido");
     select.innerHTML = '<option value="">Selecione um produto</option>';
 
-    produtos.forEach(produto => {
+    produtos.forEach(p => {
         const option = document.createElement("option");
-        option.value = produto.id;
-        option.textContent = produto.nome;
+        option.value = p.id;
+        option.textContent = p.nome;
+        option.dataset.fornecedor = p.fornecedorId;
         select.appendChild(option);
     });
 }
 
-/* ======================== FILTRAR FORNECEDOR PELO PRODUTO ======================== */
+/* ======================== AO SELECIONAR PRODUTO, CARREGA FORNECEDOR ======================== */
 
-document.getElementById("selectProdutoPedido").addEventListener("change", async function () {
+document.getElementById("selectProdutoPedido").addEventListener("change", function () {
     const produtoId = this.value;
+    const opt = this.querySelector(`option[value='${produtoId}']`);
 
-    const resposta = await fetch(`${API_URL}/produtos`);
-    const produtos = await resposta.json();
+    if (!opt) return;
 
-    const produto = produtos.find(p => p.id == produtoId);
-
-    const fornecedorId = produto?.fornecedorId;
-
-    const respostaFor = await fetch(`${API_URL}/fornecedores`);
-    const fornecedores = await respostaFor.json();
-
-    const selectFornecedor = document.getElementById("selectFornecedorPedido");
-    selectFornecedor.innerHTML = "<option value=''>Selecione um fornecedor</option>";
-
-    fornecedores.forEach(f => {
-        if (f.id == fornecedorId) {
-            const option = document.createElement("option");
-            option.value = f.id;
-            option.textContent = `${f.nome} (${f.contato || "sem contato"})`;
-            selectFornecedor.appendChild(option);
-        }
-    });
-});
-
-/* ======================== EVENTO DE MÁSCARA ======================== */
-
-document.getElementById("fornecedorContato").addEventListener("input", function () {
-    aplicarMascaraTelefone(this);
+    const fornecedorId = opt.dataset.fornecedor;
+    document.getElementById("selectFornecedorPedido").value = fornecedorId;
 });
 
 /* ======================== INICIALIZAÇÃO ======================== */
 
-carregarPedidos();
 carregarFornecedores();
-carregarProdutosParaPedido();
-
+carregarProdutos();
+carregarPedidos();

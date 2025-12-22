@@ -1,5 +1,26 @@
 const API_URL = "https://meuback-ulyh.onrender.com";
 
+/* ======================== MÁSCARA TELEFONE ======================== */
+
+function aplicarMascaraTelefone(input) {
+    let v = input.value.replace(/\D/g, "");
+
+    if (v.length > 11) v = v.slice(0, 11);
+
+    if (v.length >= 1) v = "(" + v;
+    if (v.length >= 3) v = v.slice(0, 3) + ") " + v.slice(3);
+
+    if (v.length >= 10) {
+        if (v.length <= 14) {
+            v = v.slice(0, 9) + v.slice(9, 13).replace(/(\d{4})(\d)/, "$1-$2");
+        } else {
+            v = v.slice(0, 10) + v.slice(10).replace(/(\d{5})(\d)/, "$1-$2");
+        }
+    }
+
+    input.value = v;
+}
+
 /* ======================== CARREGAR PEDIDOS ======================== */
 
 async function carregarPedidos() {
@@ -27,7 +48,6 @@ async function carregarPedidos() {
         lista.appendChild(item);
     });
 }
-
 
 /* ======================== CRIAR PEDIDO ======================== */
 
@@ -58,14 +78,12 @@ async function criarPedido() {
         '<option value="">Selecione um fornecedor</option>';
 }
 
-
 /* ======================== EXCLUIR PEDIDO ======================== */
 
 async function excluirPedido(id) {
     await fetch(`${API_URL}/pedidos/${id}`, { method: "DELETE" });
     carregarPedidos();
 }
-
 
 /* ======================== CARREGAR FORNECEDORES ======================== */
 
@@ -82,6 +100,7 @@ async function carregarFornecedores() {
 
         item.innerHTML = `
             <strong>${fornecedor.nome}</strong>
+            <br><small>Contato: ${fornecedor.contato || "Não informado"}</small>
 
             <button class="btn btn-danger btn-sm float-end ms-2" onclick="excluirFornecedor(${fornecedor.id})">
                 Excluir
@@ -105,34 +124,32 @@ async function carregarFornecedores() {
     });
 }
 
-
 /* ======================== SALVAR FORNECEDOR ======================== */
 
 async function salvarFornecedor() {
     const nome = document.getElementById("fornecedorNome").value;
+    const contato = document.getElementById("fornecedorContato").value;
 
     await fetch(`${API_URL}/fornecedores`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nome })
+        body: JSON.stringify({ nome, contato })
     });
 
     document.getElementById("fornecedorNome").value = "";
+    document.getElementById("fornecedorContato").value = "";
 
     carregarFornecedores();
     carregarProdutosParaPedido();
 }
-
 
 /* ======================== EXCLUIR FORNECEDOR ======================== */
 
 async function excluirFornecedor(id) {
     await fetch(`${API_URL}/fornecedores/${id}`, { method: "DELETE" });
-
     carregarFornecedores();
     carregarProdutosParaPedido();
 }
-
 
 /* ======================== PRODUTOS ======================== */
 
@@ -178,13 +195,11 @@ async function carregarProdutosDoFornecedor(fornecedorId) {
 
 async function excluirProduto(id, fornecedorId) {
     await fetch(`${API_URL}/produtos/${id}`, { method: "DELETE" });
-
     carregarProdutosDoFornecedor(fornecedorId);
     carregarProdutosParaPedido();
 }
 
-
-/* ======================== PRODUTOS PARA SELECT DO PEDIDO ======================== */
+/* ======================== PRODUTOS PARA PEDIDO ======================== */
 
 async function carregarProdutosParaPedido() {
     const resposta = await fetch(`${API_URL}/produtos`);
@@ -201,8 +216,7 @@ async function carregarProdutosParaPedido() {
     });
 }
 
-
-/* ======================== FILTRAR FORNECEDORES CONFORME PRODUTO ======================== */
+/* ======================== FILTRAR FORNECEDOR PELO PRODUTO ======================== */
 
 document.getElementById("selectProdutoPedido").addEventListener("change", async function () {
     const produtoId = this.value;
@@ -224,12 +238,17 @@ document.getElementById("selectProdutoPedido").addEventListener("change", async 
         if (f.id == fornecedorId) {
             const option = document.createElement("option");
             option.value = f.id;
-            option.textContent = f.nome;
+            option.textContent = `${f.nome} (${f.contato || "sem contato"})`;
             selectFornecedor.appendChild(option);
         }
     });
 });
 
+/* ======================== EVENTO DE MÁSCARA ======================== */
+
+document.getElementById("fornecedorContato").addEventListener("input", function () {
+    aplicarMascaraTelefone(this);
+});
 
 /* ======================== INICIALIZAÇÃO ======================== */
 

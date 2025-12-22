@@ -53,3 +53,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+function addProductToSupplier(supplierId, productName, productPrice) {
+    const supplierProductsDiv = document.getElementById(`supplier-products-${supplierId}`);
+    const productCard = document.createElement('div');
+    productCard.className = 'product-mini-card';
+    productCard.innerHTML = `
+        <h4>${productName}</h4>
+        <p>R$ ${productPrice}</p>
+        <button onclick="deleteProduct(this)">Excluir</button>
+    `;
+    supplierProductsDiv.appendChild(productCard);
+}
+
+function deleteProduct(button) {
+    const productCard = button.parentElement;
+    productCard.remove();
+}

@@ -19,9 +19,19 @@ function renderSuppliers() {
         const card = document.createElement('div');
         card.className = 'supplier-card';
         card.innerHTML = `
-            <h3>${supplier.name}</h3>
-            <p>Contato: ${supplier.contact}</p>
-        `;
+    <h3>${supplier.name}</h3>
+    <p>Contato: ${supplier.contact}</p>
+
+    <!-- Área onde os mini cards de produtos vão aparecer -->
+    <div class="supplier-products" id="supplier-products-${suppliers.indexOf(supplier)}"></div>
+
+    <!-- Formulário para adicionar produto -->
+    <div class="add-product-form">
+        <input type="text" placeholder="Nome do Produto" class="product-name-input">
+        <input type="number" placeholder="Preço" class="product-price-input">
+        <button class="add-product-btn">Adicionar Produto</button>
+    </div>
+`;
         cardsContainer.appendChild(card);
     });
 }

@@ -1,145 +1,238 @@
-const BASE_URL = "https://meuback-ulyh.onrender.com";
+const API_URL = "https://meuback-ulyh.onrender.com";
 
-// ===============================
-//     PEDIDOS
-// ===============================
+/* ======================== CARREGAR PEDIDOS ======================== */
 
-function criarPedido() {
-    const titulo = document.getElementById("titulo").value;
-    const descricao = document.getElementById("descricao").value;
+async function carregarPedidos() {
+    const resposta = await fetch(`${API_URL}/pedidos`);
+    const pedidos = await resposta.json();
 
-    fetch(`${BASE_URL}/pedidos`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ titulo, descricao, status: "aberto" })
-    })
-    .then(res => res.json())
-    .then(() => {
-        document.getElementById("titulo").value = "";
-        document.getElementById("descricao").value = "";
-        carregarPedidos();
+    const lista = document.getElementById("lista");
+    lista.innerHTML = "";
+
+    pedidos.forEach(pedido => {
+        const item = document.createElement("li");
+        item.className = "list-group-item";
+
+        item.innerHTML = `
+            <strong>${pedido.titulo}</strong><br>
+            ${pedido.descricao}<br>
+            <small>Produto ID: ${pedido.produtoId || "Nenhum"}</small><br>
+            <small>Fornecedor ID: ${pedido.fornecedorId || "Nenhum"}</small>
+
+            <button class="btn btn-danger btn-sm float-end" onclick="excluirPedido(${pedido.id})">
+                Excluir
+            </button>
+        `;
+
+        lista.appendChild(item);
     });
 }
 
-function carregarPedidos() {
-    fetch(`${BASE_URL}/pedidos`)
-        .then(res => res.json())
-        .then(pedidos => {
-            const div = document.getElementById("lista");
-            div.innerHTML = "";
-            pedidos.forEach(p => {
-                div.innerHTML += `
-                    <p>
-                        <strong>${p.titulo}</strong> - ${p.descricao}
-                        <button onclick="excluirPedido(${p.id})">Excluir</button>
-                    </p>
-                `;
-            });
-        });
+
+/* ======================== CRIAR PEDIDO ======================== */
+
+async function criarPedido() {
+    const titulo = document.getElementById("titulo").value;
+    const descricao = document.getElementById("descricao").value;
+    const produtoId = document.getElementById("selectProdutoPedido").value;
+    const fornecedorId = document.getElementById("selectFornecedorPedido").value;
+
+    await fetch(`${API_URL}/pedidos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            titulo,
+            descricao,
+            status: "aberto",
+            produtoId,
+            fornecedorId
+        })
+    });
+
+    carregarPedidos();
+
+    document.getElementById("titulo").value = "";
+    document.getElementById("descricao").value = "";
+    document.getElementById("selectProdutoPedido").value = "";
+    document.getElementById("selectFornecedorPedido").innerHTML =
+        '<option value="">Selecione um fornecedor</option>';
 }
 
-function excluirPedido(id) {
-    fetch(`${BASE_URL}/pedidos/${id}`, { method: "DELETE" })
-        .then(() => carregarPedidos());
+
+/* ======================== EXCLUIR PEDIDO ======================== */
+
+async function excluirPedido(id) {
+    await fetch(`${API_URL}/pedidos/${id}`, { method: "DELETE" });
+    carregarPedidos();
 }
 
-carregarPedidos();
 
-// ===============================
-//     FORNECEDORES
-// ===============================
+/* ======================== CARREGAR FORNECEDORES ======================== */
 
-function salvarFornecedor() {
+async function carregarFornecedores() {
+    const resposta = await fetch(`${API_URL}/fornecedores`);
+    const fornecedores = await resposta.json();
+
+    const lista = document.getElementById("listaFornecedores");
+    lista.innerHTML = "";
+
+    fornecedores.forEach(fornecedor => {
+        const item = document.createElement("li");
+        item.className = "list-group-item";
+
+        item.innerHTML = `
+            <strong>${fornecedor.nome}</strong>
+
+            <button class="btn btn-danger btn-sm float-end ms-2" onclick="excluirFornecedor(${fornecedor.id})">
+                Excluir
+            </button>
+
+            <div class="mt-3">
+                <input id="produtoNome-${fornecedor.id}" class="form-control mb-2"
+                    placeholder="Nome do produto">
+
+                <button class="btn btn-secondary btn-sm" onclick="salvarProduto(${fornecedor.id})">
+                    Adicionar Produto
+                </button>
+
+                <ul id="produtos-${fornecedor.id}" class="list-group mt-2"></ul>
+            </div>
+        `;
+
+        lista.appendChild(item);
+
+        carregarProdutosDoFornecedor(fornecedor.id);
+    });
+}
+
+
+/* ======================== SALVAR FORNECEDOR ======================== */
+
+async function salvarFornecedor() {
     const nome = document.getElementById("fornecedorNome").value;
 
-    fetch(`${BASE_URL}/fornecedores`, {
+    await fetch(`${API_URL}/fornecedores`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nome })
-    })
-    .then(res => res.json())
-    .then(() => {
-        document.getElementById("msgFornecedor").innerText = "Fornecedor salvo!";
-        document.getElementById("fornecedorNome").value = "";
-        carregarFornecedores();
     });
+
+    document.getElementById("fornecedorNome").value = "";
+
+    carregarFornecedores();
+    carregarProdutosParaPedido();
 }
 
-function carregarFornecedores() {
-    fetch(`${BASE_URL}/fornecedores`)
-        .then(res => res.json())
-        .then(lista => {
-            const div = document.getElementById("listaFornecedores");
-            div.innerHTML = "";
 
-            lista.forEach(f => {
-                div.innerHTML += `
-                    <div style="margin-bottom:15px;">
-                        <p>
-                            <strong>${f.nome}</strong>
-                            <button onclick="excluirFornecedor(${f.id})">Excluir fornecedor</button>
-                        </p>
+/* ======================== EXCLUIR FORNECEDOR ======================== */
 
-                        <div id="produtos-${f.id}"></div>
+async function excluirFornecedor(id) {
+    await fetch(`${API_URL}/fornecedores/${id}`, { method: "DELETE" });
 
-                        <input id="produto-nome-${f.id}" placeholder="Nome do produto">
-                        <button onclick="adicionarProduto(${f.id})">Adicionar Produto</button>
-
-                        <hr>
-                    </div>
-                `;
-
-                carregarProdutos(f.id);
-            });
-        });
+    carregarFornecedores();
+    carregarProdutosParaPedido();
 }
 
-function excluirFornecedor(id) {
-    fetch(`${BASE_URL}/fornecedores/${id}`, { method: "DELETE" })
-        .then(() => carregarFornecedores());
-}
 
-carregarFornecedores();
+/* ======================== PRODUTOS ======================== */
 
-// ===============================
-//     PRODUTOS POR FORNECEDOR
-// ===============================
+async function salvarProduto(fornecedorId) {
+    const nome = document.getElementById(`produtoNome-${fornecedorId}`).value;
 
-function adicionarProduto(fornecedorId) {
-    const nomeProd = document.getElementById(`produto-nome-${fornecedorId}`).value;
-
-    fetch(`${BASE_URL}/produtos`, {
+    await fetch(`${API_URL}/produtos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nome: nomeProd, fornecedorId })
-    })
-    .then(() => {
-        document.getElementById(`produto-nome-${fornecedorId}`).value = "";
-        carregarProdutos(fornecedorId);
+        body: JSON.stringify({ nome, fornecedorId })
     });
+
+    document.getElementById(`produtoNome-${fornecedorId}`).value = "";
+
+    carregarProdutosDoFornecedor(fornecedorId);
+    carregarProdutosParaPedido();
 }
 
-function carregarProdutos(fornecedorId) {
-    fetch(`${BASE_URL}/produtos`)
-        .then(res => res.json())
-        .then(produtos => {
-            const lista = produtos.filter(p => p.fornecedorId == fornecedorId);
-            const div = document.getElementById(`produtos-${fornecedorId}`);
+async function carregarProdutosDoFornecedor(fornecedorId) {
+    const resposta = await fetch(`${API_URL}/produtos`);
+    const produtos = await resposta.json();
 
-            div.innerHTML = "<strong>Produtos:</strong><ul>" 
-                + lista.map(p => 
-                    `<li>
-                        ${p.nome}
-                        <button onclick="excluirProduto(${p.id}, ${fornecedorId})">
-                            Excluir
-                        </button>
-                    </li>`
-                ).join("") 
-                + "</ul>";
+    const lista = document.getElementById(`produtos-${fornecedorId}`);
+    lista.innerHTML = "";
+
+    produtos
+        .filter(p => p.fornecedorId == fornecedorId)
+        .forEach(produto => {
+            const item = document.createElement("li");
+            item.className = "list-group-item";
+
+            item.innerHTML = `
+                ${produto.nome}
+                <button class="btn btn-danger btn-sm float-end"
+                    onclick="excluirProduto(${produto.id}, ${fornecedorId})">
+                    Excluir
+                </button>
+            `;
+
+            lista.appendChild(item);
         });
 }
 
-function excluirProduto(id, fornecedorId) {
-    fetch(`${BASE_URL}/produtos/${id}`, { method: "DELETE" })
-        .then(() => carregarProdutos(fornecedorId));
+async function excluirProduto(id, fornecedorId) {
+    await fetch(`${API_URL}/produtos/${id}`, { method: "DELETE" });
+
+    carregarProdutosDoFornecedor(fornecedorId);
+    carregarProdutosParaPedido();
 }
+
+
+/* ======================== PRODUTOS PARA SELECT DO PEDIDO ======================== */
+
+async function carregarProdutosParaPedido() {
+    const resposta = await fetch(`${API_URL}/produtos`);
+    const produtos = await resposta.json();
+
+    const select = document.getElementById("selectProdutoPedido");
+    select.innerHTML = '<option value="">Selecione um produto</option>';
+
+    produtos.forEach(produto => {
+        const option = document.createElement("option");
+        option.value = produto.id;
+        option.textContent = produto.nome;
+        select.appendChild(option);
+    });
+}
+
+
+/* ======================== FILTRAR FORNECEDORES CONFORME PRODUTO ======================== */
+
+document.getElementById("selectProdutoPedido").addEventListener("change", async function () {
+    const produtoId = this.value;
+
+    const resposta = await fetch(`${API_URL}/produtos`);
+    const produtos = await resposta.json();
+
+    const produto = produtos.find(p => p.id == produtoId);
+
+    const fornecedorId = produto?.fornecedorId;
+
+    const respostaFor = await fetch(`${API_URL}/fornecedores`);
+    const fornecedores = await respostaFor.json();
+
+    const selectFornecedor = document.getElementById("selectFornecedorPedido");
+    selectFornecedor.innerHTML = "<option value=''>Selecione um fornecedor</option>";
+
+    fornecedores.forEach(f => {
+        if (f.id == fornecedorId) {
+            const option = document.createElement("option");
+            option.value = f.id;
+            option.textContent = f.nome;
+            selectFornecedor.appendChild(option);
+        }
+    });
+});
+
+
+/* ======================== INICIALIZAÇÃO ======================== */
+
+carregarPedidos();
+carregarFornecedores();
+carregarProdutosParaPedido();

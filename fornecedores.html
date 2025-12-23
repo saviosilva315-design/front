@@ -6,18 +6,23 @@
     <link rel="stylesheet" href="fornecedores.css">
 </head>
 <body>
+
     <div class="container">
+
         <header>
             <h1>Fornecedores</h1>
         </header>
 
-        <form id="supplier-form">
+        <!-- Formulário de criar fornecedor -->
+        <form id="create-supplier-form">
             <input type="text" id="supplier-name" placeholder="Nome do Fornecedor" required>
-            <input type="text" id="supplier-contact" placeholder="Contato (Telefone)" required>
+            <input type="text" id="supplier-phone" placeholder="Telefone" required>
             <button type="submit">Adicionar Fornecedor</button>
         </form>
 
-        <div id="supplier-cards"></div>
+        <!-- Área onde todos os fornecedores serão colocados -->
+        <div id="suppliers-container"></div>
+
     </div>
 
     <script src="fornecedores.js"></script>

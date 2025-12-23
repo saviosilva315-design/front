@@ -1,81 +1,158 @@
-let suppliers = [
-    { name: 'Fornecedor A', contact: '(11) 99999-9999' },
-    { name: 'Fornecedor B', contact: '(21) 88888-8888' }
+// fornecedores.js - Arquivo completo para gerenciamento de fornecedores
+
+// Dados mock
+let fornecedores = [
+    {
+        id: 1,
+        nome: 'Fornecedor A',
+        telefone: '(11) 99999-9999',
+        produtos: [
+            { id: 1, nome: 'Produto 1', preco: 10.00 },
+            { id: 2, nome: 'Produto 2', preco: 20.00 }
+        ]
+    },
+    {
+        id: 2,
+        nome: 'Fornecedor B',
+        telefone: '(21) 88888-8888',
+        produtos: [
+            { id: 3, nome: 'Produto 3', preco: 15.00 }
+        ]
+    }
 ];
 
-function formatPhone(value) {
-    value = value.replace(/\D/g, '');
-    if (value.length <= 11) {
-        value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-    }
-    return value;
+let proximoIdFornecedor = 3;
+let proximoIdProduto = 4;
+
+// Máscara de telefone
+function aplicarMascaraTelefone(telefone) {
+    telefone = telefone.replace(/\D/g, '');
+    telefone = telefone.replace(/(\d{2})(\d)/, '($1) $2');
+    telefone = telefone.replace(/(\d{5})(\d{4})$/, '$1-$2');
+    return telefone;
 }
 
-function renderSuppliers() {
-    const cardsContainer = document.getElementById('supplier-cards');
-    cardsContainer.innerHTML = '';
+// Renderizar fornecedores
+function renderizarFornecedores() {
+    const container = document.getElementById('suppliers-container');
+    container.innerHTML = '';
 
-    suppliers.forEach(supplier => {
+    fornecedores.forEach(fornecedor => {
         const card = document.createElement('div');
         card.className = 'supplier-card';
+
         card.innerHTML = `
-    <h3>${supplier.name}</h3>
-    <p>Contato: ${supplier.contact}</p>
+            <h3>${fornecedor.nome}</h3>
+            <p>Telefone: ${fornecedor.telefone}</p>
 
-    <!-- Área onde os mini cards de produtos vão aparecer -->
-    <div class="supplier-products" id="supplier-products-${suppliers.indexOf(supplier)}"></div>
+            <div class="products-area">
+                <h4>Produtos:</h4>
+                <div class="products-list" id="products-${fornecedor.id}"></div>
 
-    <!-- Formulário para adicionar produto -->
-    <div class="add-product-form">
-        <input type="text" placeholder="Nome do Produto" class="product-name-input">
-        <input type="number" placeholder="Preço" class="product-price-input">
-        <button class="add-product-btn">Adicionar Produto</button>
-    </div>
-`;
-        cardsContainer.appendChild(card);
+                <form class="add-product-form" id="form-${fornecedor.id}">
+                    <input type="text" placeholder="Nome do produto" id="nome-produto-${fornecedor.id}" required>
+                    <input type="number" step="0.01" placeholder="Preço" id="preco-produto-${fornecedor.id}" required>
+                    <button type="submit">Adicionar Produto</button>
+                </form>
+            </div>
+        `;
+
+        container.appendChild(card);
+
+        renderizarProdutos(fornecedor.id);
+
+        document.getElementById(`form-${fornecedor.id}`).addEventListener('submit', e => {
+            e.preventDefault();
+            adicionarProduto(fornecedor.id);
+        });
     });
 }
 
-function createSupplier(name, contact) {
-    suppliers.push({ name, contact });
-    renderSuppliers();
+// Renderizar produtos de um fornecedor
+function renderizarProdutos(fornecedorId) {
+    const fornecedor = fornecedores.find(f => f.id === fornecedorId);
+    const lista = document.getElementById(`products-${fornecedorId}`);
+
+    lista.innerHTML = '';
+
+    fornecedor.produtos.forEach(produto => {
+        const miniCard = document.createElement('div');
+        miniCard.className = 'product-mini-card';
+
+        miniCard.innerHTML = `
+            <span>${produto.nome} - R$ ${produto.preco.toFixed(2)}</span>
+            <button onclick="deletarProduto(${fornecedorId}, ${produto.id})">Deletar</button>
+        `;
+
+        lista.appendChild(miniCard);
+    });
 }
 
+// Criar produto
+function adicionarProduto(fornecedorId) {
+    const nomeInput = document.getElementById(`nome-produto-${fornecedorId}`);
+    const precoInput = document.getElementById(`preco-produto-${fornecedorId}`);
+
+    const nome = nomeInput.value.trim();
+    const preco = parseFloat(precoInput.value);
+
+    if (nome && !isNaN(preco)) {
+        const fornecedor = fornecedores.find(f => f.id === fornecedorId);
+
+        fornecedor.produtos.push({
+            id: proximoIdProduto++,
+            nome,
+            preco
+        });
+
+        nomeInput.value = '';
+        precoInput.value = '';
+
+        renderizarProdutos(fornecedorId);
+    }
+}
+
+// Excluir produto
+function deletarProduto(fornecedorId, produtoId) {
+    const fornecedor = fornecedores.find(f => f.id === fornecedorId);
+    fornecedor.produtos = fornecedor.produtos.filter(p => p.id !== produtoId);
+
+    renderizarProdutos(fornecedorId);
+}
+
+// Criar fornecedor
+function criarFornecedor() {
+    const nomeInput = document.getElementById('supplier-name');
+    const telefoneInput = document.getElementById('supplier-phone');
+
+    const nome = nomeInput.value.trim();
+    const telefone = aplicarMascaraTelefone(telefoneInput.value);
+
+    if (nome && telefone) {
+        fornecedores.push({
+            id: proximoIdFornecedor++,
+            nome,
+            telefone,
+            produtos: []
+        });
+
+        nomeInput.value = '';
+        telefoneInput.value = '';
+
+        renderizarFornecedores();
+    }
+}
+
+// Eventos iniciais
 document.addEventListener('DOMContentLoaded', () => {
-    renderSuppliers();
+    renderizarFornecedores();
 
-    const form = document.getElementById('supplier-form');
-    const contactInput = document.getElementById('supplier-contact');
-
-    contactInput.addEventListener('input', (e) => {
-        e.target.value = formatPhone(e.target.value);
+    document.getElementById('create-supplier-form').addEventListener('submit', e => {
+        e.preventDefault();
+        criarFornecedor();
     });
 
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const name = document.getElementById('supplier-name').value.trim();
-        const contact = contactInput.value.trim();
-
-        if (name && contact) {
-            createSupplier(name, contact);
-            form.reset();
-        }
+    document.getElementById('supplier-phone').addEventListener('input', e => {
+        e.target.value = aplicarMascaraTelefone(e.target.value);
     });
 });
-function addProductToSupplier(supplierId, productName, productPrice) {
-    const supplierProductsDiv = document.getElementById(`supplier-products-${supplierId}`);
-    const productCard = document.createElement('div');
-    productCard.className = 'product-mini-card';
-    productCard.innerHTML = `
-        <h4>${productName}</h4>
-        <p>R$ ${productPrice}</p>
-        <button onclick="deleteProduct(this)">Excluir</button>
-    `;
-    supplierProductsDiv.appendChild(productCard);
-}
-
-function deleteProduct(button) {
-    const productCard = button.parentElement;
-    productCard.remove();
-}

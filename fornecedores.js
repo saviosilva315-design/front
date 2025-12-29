@@ -1,16 +1,7 @@
-// ============================
-// CONFIGURAÇÃO DO SISTEMA
-// ============================
-
 const API_BASE = "https://meuback-ulyh.onrender.com";
 
 let fornecedores = [];
-let produtosCache = {}; // produtos por fornecedor (cache local)
-
-
-// ============================
-// FUNÇÕES DE LOADING (SPINNER)
-// ============================
+let produtosCache = {};
 
 function showLoading() {
     const container = document.getElementById("suppliers-container");
@@ -21,21 +12,14 @@ function showLoading() {
 }
 
 function hideLoading() {
-    const container = document.getElementById("suppliers-container");
-    container.innerHTML = "";
+    document.getElementById("suppliers-container").innerHTML = "";
 }
-
-
-// ============================
-// FUNÇÕES DE API (BACKEND)
-// ============================
 
 async function apiGet(path) {
     try {
         const response = await fetch(API_BASE + path);
         return await response.json();
-    } catch (err) {
-        console.error("Erro GET:", err);
+    } catch {
         return null;
     }
 }
@@ -48,8 +32,7 @@ async function apiPost(path, body) {
             body: JSON.stringify(body)
         });
         return await response.json();
-    } catch (err) {
-        console.error("Erro POST:", err);
+    } catch {
         return null;
     }
 }
@@ -57,17 +40,8 @@ async function apiPost(path, body) {
 async function apiDelete(path) {
     try {
         await fetch(API_BASE + path, { method: "DELETE" });
-        return true;
-    } catch (err) {
-        console.error("Erro DELETE:", err);
-        return false;
-    }
+    } catch {}
 }
-
-
-// ============================
-// CARREGAR FORNECEDORES
-// ============================
 
 async function carregarFornecedores() {
     showLoading();
@@ -76,21 +50,9 @@ async function carregarFornecedores() {
 
     hideLoading();
 
-    if (!data) {
-        console.warn("FALHA — carregando fornecedores do localStorage");
-        fornecedores = JSON.parse(localStorage.getItem("fornecedores") || "[]");
-    } else {
-        fornecedores = data;
-        localStorage.setItem("fornecedores", JSON.stringify(fornecedores));
-    }
-
+    fornecedores = data || [];
     renderizarFornecedores();
 }
-
-
-// ============================
-// RENDERIZAR FORNECEDORES
-// ============================
 
 function renderizarFornecedores() {
     const container = document.getElementById("suppliers-container");
@@ -128,15 +90,9 @@ function renderizarFornecedores() {
         `;
 
         container.appendChild(card);
-
         carregarProdutos(fornecedor.id);
     });
 }
-
-
-// ============================
-// CARREGAR PRODUTOS DO BACKEND
-// ============================
 
 async function carregarProdutos(fornecedorId) {
     const lista = document.getElementById(`products-${fornecedorId}`);
@@ -144,20 +100,13 @@ async function carregarProdutos(fornecedorId) {
     const data = await apiGet(`/produtos?fornecedorId=${fornecedorId}`);
 
     if (!data) {
-        console.warn("Erro ao buscar produtos. Usando fallback.");
         lista.innerHTML = `<p style="color:#999;">Erro ao carregar produtos.</p>`;
         return;
     }
 
     produtosCache[fornecedorId] = data;
-
     renderizarProdutos(fornecedorId);
 }
-
-
-// ============================
-// RENDERIZAR PRODUTOS NO CARD
-// ============================
 
 function renderizarProdutos(fornecedorId) {
     const lista = document.getElementById(`products-${fornecedorId}`);
@@ -183,24 +132,17 @@ function renderizarProdutos(fornecedorId) {
     });
 }
 
-
-// ============================
-// ADICIONAR PRODUTO
-// ============================
-
 async function adicionarProduto(event, fornecedorId) {
     event.preventDefault();
 
-    const nomeInput = document.getElementById(`produto-nome-${fornecedorId}`);
-    const precoInput = document.getElementById(`produto-preco-${fornecedorId}`);
+    const nome = document.getElementById(`produto-nome-${fornecedorId}`).value;
+    const preco = parseFloat(document.getElementById(`produto-preco-${fornecedorId}`).value);
 
-    const produto = {
-        name: nomeInput.value.trim(),
-        price: parseFloat(precoInput.value),
-        fornecedorId: fornecedorId
-    };
-
-    const criado = await apiPost("/produtos", produto);
+    const criado = await apiPost("/produtos", {
+        name: nome,
+        price: preco,
+        fornecedorId
+    });
 
     if (!criado || !criado.id) {
         alert("Erro ao criar produto.");
@@ -210,33 +152,21 @@ async function adicionarProduto(event, fornecedorId) {
     produtosCache[fornecedorId].push(criado);
     renderizarProdutos(fornecedorId);
 
-    nomeInput.value = "";
-    precoInput.value = "";
+    document.getElementById(`produto-nome-${fornecedorId}`).value = "";
+    document.getElementById(`produto-preco-${fornecedorId}`).value = "";
 }
-
-
-// ============================
-// DELETAR PRODUTO
-// ============================
 
 async function deletarProduto(id, fornecedorId) {
     await apiDelete(`/produtos/${id}`);
-
     produtosCache[fornecedorId] = produtosCache[fornecedorId].filter(p => p.id !== id);
-
     renderizarProdutos(fornecedorId);
 }
-
-
-// ============================
-// ADICIONAR FORNECEDOR
-// ============================
 
 async function adicionarFornecedor(event) {
     event.preventDefault();
 
-    const nome = document.getElementById("supplier-name").value.trim();
-    const contato = document.getElementById("supplier-phone").value.trim();
+    const nome = document.getElementById("supplier-name").value;
+    const contato = document.getElementById("supplier-phone").value;
 
     const criado = await apiPost("/fornecedores", {
         name: nome,
@@ -249,29 +179,14 @@ async function adicionarFornecedor(event) {
     }
 
     fornecedores.push(criado);
-    localStorage.setItem("fornecedores", JSON.stringify(fornecedores));
-
     renderizarFornecedores();
 }
-
-
-// ============================
-// EXCLUIR FORNECEDOR
-// ============================
 
 async function deletarFornecedor(id) {
     await apiDelete(`/fornecedores/${id}`);
-
     fornecedores = fornecedores.filter(f => f.id !== id);
-    localStorage.setItem("fornecedores", JSON.stringify(fornecedores));
-
     renderizarFornecedores();
 }
-
-
-// ============================
-// INICIAR SISTEMA
-// ============================
 
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("create-supplier-form").addEventListener("submit", adicionarFornecedor);

@@ -135,6 +135,56 @@ function deletarFornecedor(id) {
 }
 
 // ===============================
+// BUSCAR MELHOR PREÇO
+// ===============================
+
+function buscarMelhorPreco() {
+    const termo = document.getElementById("pesquisa").value.trim().toLowerCase();
+    const box = document.getElementById("resultadoBusca");
+
+    if (!termo) {
+        box.innerHTML = "Digite o nome de um produto.";
+        return;
+    }
+
+    fetch(API + "/produtos")
+        .then(res => res.json())
+        .then(todosProdutos => {
+            const filtrados = todosProdutos.filter(p =>
+                p.nome.toLowerCase().includes(termo)
+            );
+
+            if (filtrados.length === 0) {
+                box.innerHTML = "Nenhum produto encontrado.";
+                return;
+            }
+
+            // menor preço
+            const melhor = filtrados.reduce((a, b) =>
+                a.preco < b.preco ? a : b
+            );
+
+            fetch(API + "/fornecedores")
+                .then(res => res.json())
+                .then(fornecedores => {
+                    const fornecedor = fornecedores.find(f => f.id === melhor.fornecedorId);
+
+                    if (!fornecedor) {
+                        box.innerHTML = "Fornecedor não encontrado.";
+                        return;
+                    }
+
+                    box.innerHTML = `
+                        Melhor preço encontrado:<br>
+                        Produto: <strong>${melhor.nome}</strong><br>
+                        Preço: <strong>R$ ${melhor.preco.toFixed(2)}</strong><br>
+                        Fornecedor: <strong>${fornecedor.nome}</strong>
+                    `;
+                });
+        });
+}
+
+// ===============================
 // INICIAR
 // ===============================
 

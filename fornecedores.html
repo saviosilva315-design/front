@@ -3,27 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>Fornecedores</title>
-    <link rel="stylesheet" href="fornecedores.css">
+    <style>
+        body {
+            font-family: Arial;
+            margin: 20px;
+        }
+        .fornecedor {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+        button {
+            margin-top: 5px;
+        }
+        input {
+            margin: 5px 0;
+            padding: 6px;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="container">
+    <h1>Cadastro de Fornecedores</h1>
 
-        <header>
-            <h1>Fornecedores</h1>
-        </header>
-
-        <!-- Formulário de Fornecedor -->
-        <form id="create-supplier-form">
-            <input type="text" id="supplier-name" placeholder="Nome do Fornecedor" required>
-            <input type="text" id="supplier-phone" placeholder="Telefone" required>
-            <button type="submit">Adicionar Fornecedor</button>
-        </form>
-
-        <!-- Cards -->
-        <div id="suppliers-container"></div>
-
+    <div>
+        <input id="nome" placeholder="Nome do fornecedor">
+        <br>
+        <input id="contato" placeholder="Contato">
+        <br>
+        <button onclick="adicionarFornecedor()">Adicionar fornecedor</button>
     </div>
+
+    <h2>Lista de Fornecedores</h2>
+    <div id="listaFornecedores"></div>
 
     <script src="fornecedores.js"></script>
 </body>

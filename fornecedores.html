@@ -27,6 +27,7 @@
 
     <h1>Cadastro de Fornecedores</h1>
 
+    <!-- FORM DE CADASTRO -->
     <div>
         <input id="nome" placeholder="Nome do fornecedor">
         <br>
@@ -34,6 +35,12 @@
         <br>
         <button onclick="adicionarFornecedor()">Adicionar fornecedor</button>
     </div>
+
+    <h2>Buscar Melhor Preço</h2>
+    <input id="pesquisa" placeholder="Nome do produto">
+    <button onclick="buscarMelhorPreco()">Pesquisar</button>
+
+    <div id="resultadoBusca" style="margin: 15px 0; font-weight: bold;"></div>
 
     <h2>Lista de Fornecedores</h2>
     <div id="listaFornecedores"></div>

@@ -65,6 +65,7 @@ function carregarProdutos(fornecedorId) {
 
             produtos.forEach(p => {
                 const item = document.createElement("div");
+
                 const preco = p.preco ? p.preco.toFixed(2) : "0.00";
 
                 item.innerHTML = `
@@ -134,7 +135,7 @@ function deletarFornecedor(id) {
 }
 
 // ===============================
-// BUSCAR MELHOR PREÇO (AGORA COM CONTATO)
+// BUSCAR MELHOR PREÇO
 // ===============================
 
 function buscarMelhorPreco() {
@@ -149,6 +150,7 @@ function buscarMelhorPreco() {
     fetch(API + "/produtos")
         .then(res => res.json())
         .then(todosProdutos => {
+
             const filtrados = todosProdutos.filter(p =>
                 p.nome.toLowerCase().includes(termo)
             );
@@ -158,13 +160,17 @@ function buscarMelhorPreco() {
                 return;
             }
 
+            // menor preço
             const melhor = filtrados.reduce((a, b) =>
                 a.preco < b.preco ? a : b
             );
 
+            // buscar fornecedor
             fetch(API + "/fornecedores")
                 .then(res => res.json())
                 .then(fornecedores => {
+
+                    // aceita nome ou name / contato ou contact
                     const fornecedor = fornecedores.find(f => f.id === melhor.fornecedorId);
 
                     if (!fornecedor) {
@@ -172,12 +178,15 @@ function buscarMelhorPreco() {
                         return;
                     }
 
+                    const nomeFornecedor = fornecedor.nome || fornecedor.name;
+                    const contatoFornecedor = fornecedor.contato || fornecedor.contact;
+
                     box.innerHTML = `
                         Melhor preço encontrado:<br><br>
                         Produto: <strong>${melhor.nome}</strong><br>
                         Preço: <strong>R$ ${melhor.preco.toFixed(2)}</strong><br>
-                        Fornecedor: <strong>${fornecedor.nome}</strong><br>
-                        Contato: <strong>${fornecedor.contato}</strong>
+                        Fornecedor: <strong>${nomeFornecedor}</strong><br>
+                        Contato: <strong>${contatoFornecedor}</strong>
                     `;
                 });
         });

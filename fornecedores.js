@@ -65,7 +65,6 @@ function carregarProdutos(fornecedorId) {
 
             produtos.forEach(p => {
                 const item = document.createElement("div");
-
                 const preco = p.preco ? p.preco.toFixed(2) : "0.00";
 
                 item.innerHTML = `
@@ -135,7 +134,7 @@ function deletarFornecedor(id) {
 }
 
 // ===============================
-// BUSCAR MELHOR PREÇO
+// BUSCAR MELHOR PREÇO (AGORA COM CONTATO)
 // ===============================
 
 function buscarMelhorPreco() {
@@ -159,7 +158,6 @@ function buscarMelhorPreco() {
                 return;
             }
 
-            // menor preço
             const melhor = filtrados.reduce((a, b) =>
                 a.preco < b.preco ? a : b
             );
@@ -175,10 +173,11 @@ function buscarMelhorPreco() {
                     }
 
                     box.innerHTML = `
-                        Melhor preço encontrado:<br>
+                        Melhor preço encontrado:<br><br>
                         Produto: <strong>${melhor.nome}</strong><br>
                         Preço: <strong>R$ ${melhor.preco.toFixed(2)}</strong><br>
-                        Fornecedor: <strong>${fornecedor.nome}</strong>
+                        Fornecedor: <strong>${fornecedor.nome}</strong><br>
+                        Contato: <strong>${fornecedor.contato}</strong>
                     `;
                 });
         });

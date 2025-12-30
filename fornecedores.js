@@ -48,7 +48,7 @@ function renderizarFornecedores(fornecedores) {
 }
 
 // ===============================
-// CARREGAR PRODUTOS DE UM FORNECEDOR
+// CARREGAR PRODUTOS
 // ===============================
 
 function carregarProdutos(fornecedorId) {

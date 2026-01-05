@@ -1,20 +1,54 @@
 body {
-    font-family: Arial;
-    margin: 20px;
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+    margin: 0;
+    padding: 20px;
 }
 
+h1, h2, h3, h4 {
+    margin: 0 0 10px 0;
+}
+.form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.form input {
+    padding: 8px;
+    font-size: 16px;
+    width: 250px;
+}
+
+.form button {
+    padding: 8px 14px;
+    background: #008cff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
 .fornecedor {
-    border: 1px solid #ccc;
+    background: white;
     padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 8px;
+    margin-bottom: 12px;
+    border-radius: 6px;
+    box-shadow: 0 0 5px #ccc;
 }
 
-button {
+.fornecedor button {
+    margin-right: 10px;
     margin-top: 5px;
+    padding: 6px 10px;
 }
-
-input {
-    margin: 5px 0;
-    padding: 6px;
+.produtos {
+    background: #fafafa;
+    margin-top: 10px;
+    padding: 10px;
+    border-left: 3px solid #008cff;
+}
+.del {
+    background: #ff3b3b !important;
+    color: white;
+    border: none;
+    cursor: pointer;
 }

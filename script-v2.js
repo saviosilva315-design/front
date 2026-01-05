@@ -10,7 +10,6 @@ function formatPhone(value) {
     }
     return value;
 }
-
 async function renderSuppliers() {
     const cardsContainer = document.getElementById('supplier-cards');
     cardsContainer.innerHTML = "Carregando fornecedores...";
@@ -20,13 +19,12 @@ async function renderSuppliers() {
         const suppliers = await response.json();
 
         cardsContainer.innerHTML = "";
-
-        suppliers.forEach(supplier => {
+                suppliers.forEach(supplier => {
             const card = document.createElement('div');
             card.className = 'supplier-card';
             card.innerHTML = `
                 <h3>${supplier.nome}</h3>
-                <p>Contato: ${supplier.contact || "Não informado"}</p>
+                <p>Contato: ${supplier.contato || "Não informado"}</p>
             `;
             cardsContainer.appendChild(card);
         });
@@ -35,20 +33,18 @@ async function renderSuppliers() {
         cardsContainer.innerHTML = "Erro ao carregar fornecedores.";
     }
 }
-
 async function createSupplier(name, contact) {
     try {
         await fetch(`${API}/fornecedores`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ nome: name, contact })
+            body: JSON.stringify({ nome: name, contato: contact })
         });
         renderSuppliers();
     } catch (error) {
         console.log("Erro ao salvar fornecedor");
     }
 }
-
 document.addEventListener('DOMContentLoaded', () => {
     renderSuppliers();
 
@@ -58,8 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     contactInput.addEventListener('input', (e) => {
         e.target.value = formatPhone(e.target.value);
     });
-
-    form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', (e) => {
         e.preventDefault();
 
         const name = document.getElementById('supplier-name').value.trim();

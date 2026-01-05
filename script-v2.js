@@ -1,36 +1,75 @@
-let suppliers = [
-    { name: 'Fornecedor A', contact: '(11) 99999-9999' },
-    { name: 'Fornecedor B', contact: '(21) 88888-8888' }
-];
+// ==============================
+// CONFIGURAÇÃO DA API
+// ==============================
+const API = "https://SEU-BACKEND.onrender.com";
 
+// ==============================
+// FORMATAR TELEFONE
+// ==============================
 function formatPhone(value) {
     value = value.replace(/\D/g, '');
-    if (value.length <= 11) {
-        value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+
+    if (value.length === 11) {
+        return value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
     }
+
+    if (value.length === 10) {
+        return value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+    }
+
     return value;
 }
 
-function renderSuppliers() {
+// ==============================
+// RENDERIZAR CARDS DO BACKEND
+// ==============================
+async function renderSuppliers() {
     const cardsContainer = document.getElementById('supplier-cards');
-    cardsContainer.innerHTML = '';
+    cardsContainer.innerHTML = "Carregando fornecedores...";
 
-    suppliers.forEach(supplier => {
-        const card = document.createElement('div');
-        card.className = 'supplier-card';
-        card.innerHTML = `
-            <h3>${supplier.name}</h3>
-            <p>Contato: ${supplier.contact}</p>
-        `;
-        cardsContainer.appendChild(card);
-    });
+    try {
+        const response = await fetch(`${API}/fornecedores`);
+        const suppliers = await response.json();
+
+        cardsContainer.innerHTML = "";
+
+        suppliers.forEach(supplier => {
+            const card = document.createElement('div');
+            card.className = 'supplier-card';
+
+            card.innerHTML = `
+                <h3>${supplier.nome}</h3>
+                <p>Contato: ${supplier.contact || "Não informado"}</p>
+            `;
+
+            cardsContainer.appendChild(card);
+        });
+    } catch (error) {
+        cardsContainer.innerHTML = "Erro ao carregar fornecedores.";
+        console.error("Erro ao carregar fornecedores:", error);
+    }
 }
 
-function createSupplier(name, contact) {
-    suppliers.push({ name, contact });
-    renderSuppliers();
+// ==============================
+// CRIAR FORNECEDOR VIA BACKEND
+// ==============================
+async function createSupplier(name, contact) {
+    try {
+        await fetch(`${API}/fornecedores`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nome: name, contact })
+        });
+
+        renderSuppliers(); // atualiza a tela
+    } catch (error) {
+        console.error("Erro ao salvar fornecedor:", error);
+    }
 }
 
+// ==============================
+// EVENTOS DO FORMULÁRIO
+// ==============================
 document.addEventListener('DOMContentLoaded', () => {
     renderSuppliers();
 
@@ -47,9 +86,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const name = document.getElementById('supplier-name').value.trim();
         const contact = contactInput.value.trim();
 
-        if (name && contact) {
-            createSupplier(name, contact);
-            form.reset();
+        if (!name || !contact) {
+            alert("Preencha nome e telefone!");
+            return;
         }
+
+        createSupplier(name, contact);
+        form.reset();
     });
 });

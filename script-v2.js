@@ -1,28 +1,16 @@
-// ==============================
-// CONFIGURAÇÃO DA API
-// ==============================
-const API = "https://SEU-BACKEND.onrender.com";
+const API = "https://meuback-ulyh.onrender.com";
 
-// ==============================
-// FORMATAR TELEFONE
-// ==============================
 function formatPhone(value) {
     value = value.replace(/\D/g, '');
-
     if (value.length === 11) {
         return value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
     }
-
     if (value.length === 10) {
         return value.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
     }
-
     return value;
 }
 
-// ==============================
-// RENDERIZAR CARDS DO BACKEND
-// ==============================
 async function renderSuppliers() {
     const cardsContainer = document.getElementById('supplier-cards');
     cardsContainer.innerHTML = "Carregando fornecedores...";
@@ -36,23 +24,18 @@ async function renderSuppliers() {
         suppliers.forEach(supplier => {
             const card = document.createElement('div');
             card.className = 'supplier-card';
-
             card.innerHTML = `
                 <h3>${supplier.nome}</h3>
                 <p>Contato: ${supplier.contact || "Não informado"}</p>
             `;
-
             cardsContainer.appendChild(card);
         });
+
     } catch (error) {
         cardsContainer.innerHTML = "Erro ao carregar fornecedores.";
-        console.error("Erro ao carregar fornecedores:", error);
     }
 }
 
-// ==============================
-// CRIAR FORNECEDOR VIA BACKEND
-// ==============================
 async function createSupplier(name, contact) {
     try {
         await fetch(`${API}/fornecedores`, {
@@ -60,16 +43,12 @@ async function createSupplier(name, contact) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ nome: name, contact })
         });
-
-        renderSuppliers(); // atualiza a tela
+        renderSuppliers();
     } catch (error) {
-        console.error("Erro ao salvar fornecedor:", error);
+        console.log("Erro ao salvar fornecedor");
     }
 }
 
-// ==============================
-// EVENTOS DO FORMULÁRIO
-// ==============================
 document.addEventListener('DOMContentLoaded', () => {
     renderSuppliers();
 

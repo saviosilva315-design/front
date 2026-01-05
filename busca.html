@@ -2,11 +2,21 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Buscar Produto</title>
+    <title>Busca de Produtos</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+
+    <!-- MENU -->
+    <nav style="background:#008cff;padding:10px;">
+        <a href="fornecedores.html" style="color:white;margin-right:20px;font-size:18px;text-decoration:none;">
+            Fornecedores
+        </a>
+        <a href="busca.html" style="color:white;font-size:18px;text-decoration:none;">
+            Buscar Produto
+        </a>
+    </nav>
+
     <h1>Buscar Produto</h1>
 
     <div class="form">
@@ -14,7 +24,6 @@
         <button onclick="buscar()">Buscar</button>
     </div>
 
-    <h2>Resultados</h2>
     <div id="resultados"></div>
 
     <script src="busca.js"></script>

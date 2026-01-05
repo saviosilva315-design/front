@@ -19,6 +19,7 @@ async function carregarFornecedores() {
 
         div.innerHTML = `
             <h3>${f.nome}</h3>
+            <p><strong>Contato:</strong> ${f.contato || "Não informado"}</p>
 
             <button onclick="mostrarProdutos(${f.id}, this)">
                 Ver produtos
@@ -34,27 +35,30 @@ async function carregarFornecedores() {
         lista.appendChild(div);
     });
 }
+
 async function adicionarFornecedor() {
     const nome = document.getElementById("nome").value.trim();
+    const contato = document.getElementById("contato").value.trim();
 
-    if (!nome) {
-        alert("Digite um nome!");
+    if (!nome || !contato) {
+        alert("Preencha nome e contato!");
         return;
     }
 
     await fetch(`${API}/fornecedores`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nome })
+        body: JSON.stringify({ nome, contato })
     });
 
     document.getElementById("nome").value = "";
+    document.getElementById("contato").value = "";
     carregarFornecedores();
 }
+
 async function mostrarProdutos(fornecedorId, botao) {
     const div = document.getElementById(`produtos-${fornecedorId}`);
 
-    // esconder/mostrar
     if (div.innerHTML.trim() !== "") {
         div.innerHTML = "";
         botao.innerText = "Ver produtos";
@@ -110,6 +114,7 @@ async function adicionarProduto(fornecedorId) {
 
     mostrarProdutos(fornecedorId, { innerText: "" });
 }
+
 async function excluirProduto(produtoId, fornecedorId) {
     await fetch(`${API}/produtos/${produtoId}`, {
         method: "DELETE"

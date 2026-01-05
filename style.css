@@ -3,13 +3,13 @@
 ============================ */
 
 body {
-font-family: Arial, sans-serif;
-background: #f5f5f5;
-@@ -12,179 +8,30 @@ body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+}
+
 .container {
-width: 90%;
-max-width: 900px;
-    margin: 30px auto;
+    width: 90%;
+    max-width: 900px;
     margin: 40px auto;
 }
 
@@ -18,43 +18,33 @@ max-width: 900px;
 ============================ */
 
 header h1 {
-text-align: center;
-color: #333;
-    margin-bottom: 25px;
+    text-align: center;
+    color: #333;
     margin-bottom: 30px;
 }
 
 /* ============================
-   FORMULÁRIO PRINCIPAL
+   MENU (botões superiores)
 ============================ */
 
-#create-supplier-form {
 .menu {
-display: flex;
+    display: flex;
     gap: 10px;
-    margin-bottom: 25px;
     justify-content: center;
+    margin-bottom: 25px;
 }
 
-#create-supplier-form input {
-    padding: 10px;
-    flex: 1;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-}
-
-#create-supplier-form button {
-    padding: 10px 18px;
 .menu-btn {
-background: #2d8cff;
+    background: #2d8cff;
     border: none;
     color: white;
+    padding: 10px 18px;
     border-radius: 6px;
     cursor: pointer;
     transition: 0.2s;
 }
 
-#create-supplier-form button:hover {
+.menu-btn:hover {
     background: #0067e6;
 }
 
@@ -84,7 +74,7 @@ background: #2d8cff;
 .delete-supplier {
     background: #ff4747;
     border: none;
-color: white;
+    color: white;
     padding: 8px 14px;
     border-radius: 6px;
     cursor: pointer;
@@ -112,9 +102,8 @@ color: white;
 /* Mini-cards de produtos */
 .product-mini-card {
     background: #e9f2ff;
-    padding: 10px;
     padding: 14px 22px;
-border-radius: 8px;
+    border-radius: 8px;
     margin-bottom: 8px;
     display: flex;
     justify-content: space-between;
@@ -159,9 +148,8 @@ border-radius: 8px;
     color: white;
     border-radius: 6px;
     cursor: pointer;
-    text-decoration: none;
     font-size: 18px;
-transition: 0.2s;
+    transition: 0.2s;
 }
 
 .add-product-form button:hover {
@@ -192,6 +180,4 @@ transition: 0.2s;
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-.menu-btn:hover {
-    background: #0067e6;
 }

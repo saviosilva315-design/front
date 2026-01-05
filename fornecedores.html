@@ -3,50 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Fornecedores</title>
-    <style>
-        body {
-            font-family: Arial;
-            margin: 20px;
-        }
-        .fornecedor {
-            border: 1px solid #ccc;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-        }
-        button {
-            margin-top: 5px;
-        }
-        input {
-            margin: 5px 0;
-            padding: 6px;
-        }
-    </style>
+    <link rel="stylesheet" href="fornecedores.css">
 </head>
 <body>
-
     <h1>Cadastro de Fornecedores</h1>
 
-    <div>
+    <div class="form">
         <input id="nome" placeholder="Nome do fornecedor">
-        <br>
-        <input id="contato" placeholder="Contato">
-        <br>
-        <button onclick="adicionarFornecedor()">Adicionar fornecedor</button>
+        <button onclick="adicionarFornecedor()">Adicionar</button>
     </div>
-
-    <!-- ======================= -->
-    <!--   BARRA DE PESQUISA     -->
-    <!-- ======================= -->
-    <h2>Buscar Melhor Preço</h2>
-    <input id="pesquisa" placeholder="Nome do produto">
-    <button onclick="buscarMelhorPreco()">Pesquisar</button>
-
-    <div id="resultadoBusca" style="margin: 15px 0; font-weight: bold;"></div>
 
     <h2>Lista de Fornecedores</h2>
     <div id="listaFornecedores"></div>
-
-    <script src="fornecedores.js"></script>
+        <script src="fornecedores.js"></script>
 </body>
 </html>

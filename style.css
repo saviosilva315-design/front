@@ -1,138 +1,197 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* ============================
+   ESTILO GERAL DA PÁGINA
+============================ */
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f8f9fa;
-  color: #333;
-  line-height: 1.6;
-  font-size: 16px;
+font-family: Arial, sans-serif;
+background: #f5f5f5;
+@@ -12,179 +8,30 @@ body {
+.container {
+width: 90%;
+max-width: 900px;
+    margin: 30px auto;
+    margin: 40px auto;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  color: #007bff;
-  margin-bottom: 1rem;
-  font-weight: 600;
+/* ============================
+   TÍTULO
+============================ */
+
+header h1 {
+text-align: center;
+color: #333;
+    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
-h1 { font-size: 2.5rem; }
-h2 { font-size: 2rem; }
-h3 { font-size: 1.75rem; }
+/* ============================
+   FORMULÁRIO PRINCIPAL
+============================ */
 
-.card {
-  background-color: #ffffff;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  transition: box-shadow 0.3s ease;
+#create-supplier-form {
+.menu {
+display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    justify-content: center;
 }
 
-.card:hover {
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+#create-supplier-form input {
+    padding: 10px;
+    flex: 1;
+    border: 1px solid #ccc;
+    border-radius: 6px;
 }
 
-.card-header {
-  border-bottom: 1px solid #e9ecef;
-  padding-bottom: 0.75rem;
-  margin-bottom: 1rem;
-  font-weight: 600;
-  color: #007bff;
+#create-supplier-form button {
+    padding: 10px 18px;
+.menu-btn {
+background: #2d8cff;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-form {
-  max-width: 600px;
-  margin: 0 auto;
+#create-supplier-form button:hover {
+    background: #0067e6;
 }
 
-.form-group {
-  margin-bottom: 1.5rem;
+/* ============================
+   CARD DE FORNECEDOR
+============================ */
+
+.supplier-card {
+    background: white;
+    padding: 18px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px #00000018;
 }
 
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #495057;
+.supplier-card h3 {
+    margin: 0;
+    font-size: 22px;
+    color: #222;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="password"],
-textarea,
-select {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  font-size: 1rem;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+.supplier-card p {
+    color: #555;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+/* Botão excluir fornecedor */
+.delete-supplier {
+    background: #ff4747;
+    border: none;
+color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.2s;
 }
 
-textarea {
-  resize: vertical;
-  min-height: 100px;
+.delete-supplier:hover {
+    background: #d90000;
 }
 
-.btn {
-  display: inline-block;
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  font-weight: 500;
-  text-align: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+/* ============================
+   ÁREA DE PRODUTOS
+============================ */
+
+.products-area {
+    margin-top: 20px;
 }
 
-.btn-primary {
-  background-color: #007bff;
-  color: #ffffff;
+.products-area h4 {
+    margin-bottom: 10px;
+    color: #333;
 }
 
-.btn-primary:hover {
-  background-color: #0056b3;
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+/* Mini-cards de produtos */
+.product-mini-card {
+    background: #e9f2ff;
+    padding: 10px;
+    padding: 14px 22px;
+border-radius: 8px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.btn-secondary {
-  background-color: #6c757d;
-  color: #ffffff;
+.product-mini-card button {
+    background: #ff4747;
+    border: none;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
 }
 
-.btn-secondary:hover {
-  background-color: #545b62;
-  box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+.product-mini-card button:hover {
+    background: #c40000;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1rem;
+/* ============================
+   FORMULÁRIO DE PRODUTOS
+============================ */
+
+.add-product-form {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
 }
 
-@media (max-width: 768px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
+.add-product-form input {
+    padding: 8px;
+    flex: 1;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+}
 
-  h1 { font-size: 2rem; }
-  h2 { font-size: 1.75rem; }
+.add-product-form button {
+    padding: 8px 14px;
+    background: #4caf50;
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 18px;
+transition: 0.2s;
+}
 
-  .card {
-    padding: 1rem;
-  }
+.add-product-form button:hover {
+    background: #2c8c31;
+}
+
+/* ============================
+   SPINNER DE CARREGAMENTO
+============================ */
+
+.loading-spinner {
+    border: 6px solid #e0e0e0;
+    border-top: 6px solid #3498db;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+.loading-spinner.small {
+    width: 18px;
+    height: 18px;
+    border-width: 3px;
+    margin: 0;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+.menu-btn:hover {
+    background: #0067e6;
 }

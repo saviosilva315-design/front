@@ -20,7 +20,15 @@ async function carregarTudo() {
         div.innerHTML = `
             <strong>${f.nome}</strong> – ${f.contato}
             <button class="del" onclick="removerFornecedor(${f.id})">Excluir fornecedor</button>
-            
+            <button onclick="toggleCatalogo(${f.id})">Importar catálogo</button>
+
+            <div id="catalogoBox_${f.id}" style="display:none; margin-top:10px;">
+                <textarea id="catalogoTexto_${f.id}" placeholder="Cole aqui o catálogo, um produto por linha..." 
+                style="width:90%;height:120px;"></textarea>
+                <br>
+                <button onclick="importarCatalogo(${f.id})">Importar</button>
+            </div>
+
             <div class="produtos">
                 <h4>Produtos:</h4>
                 <div id="produtos_${f.id}">
@@ -48,6 +56,53 @@ async function carregarTudo() {
         lista.appendChild(div);
     });
 }
+
+// Mostrar/ocultar caixa
+function toggleCatalogo(id) {
+    const box = document.getElementById(`catalogoBox_${id}`);
+    box.style.display = box.style.display === "none" ? "block" : "none";
+}
+
+// Importar catálogo
+async function importarCatalogo(fornecedorId) {
+    const textarea = document.getElementById(`catalogoTexto_${fornecedorId}`);
+    const texto = textarea.value.trim();
+
+    if (!texto) {
+        alert("Cole algum texto para importar.");
+        return;
+    }
+
+    const linhas = texto.split("\n")
+        .map(l => l.trim())
+        .filter(l => l.length > 0);
+
+    const produtosResposta = await fetch(`${API}/produtos`);
+    const produtosExistentes = await produtosResposta.json();
+
+    const produtosFornecedor = produtosExistentes
+        .filter(p => p.fornecedorid === fornecedorId)
+        .map(p => p.nome.toLowerCase());
+
+    let inseridos = 0;
+
+    for (const nome of linhas) {
+        if (!produtosFornecedor.includes(nome.toLowerCase())) {
+            await fetch(`${API}/produtos`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nome, fornecedorId })
+            });
+            inseridos++;
+        }
+    }
+
+    alert(`Importação concluída. Produtos adicionados: ${inseridos}`);
+    textarea.value = "";
+    carregarTudo();
+}
+
+
 
 async function adicionarFornecedor() {
     const nome = document.getElementById("nome").value.trim();

@@ -1,27 +1,24 @@
 body {
-    font-family: Arial, sans-serif;
-    background: #f2f2f2;
-    margin: 0;
+    font-family: Arial;
+    background: #f4f4f4;
     padding: 20px;
 }
 
-h1, h2, h3, h4 {
-    margin: 0 0 10px 0;
+h1, h2 {
+    text-align: center;
 }
 
 .form {
-    display: flex;
-    gap: 10px;
+    text-align: center;
     margin-bottom: 20px;
 }
 
-.form input {
+input {
     padding: 8px;
-    font-size: 16px;
-    width: 250px;
+    margin: 5px;
 }
 
-.form button {
+button {
     padding: 8px 14px;
     background: #008cff;
     color: white;
@@ -29,33 +26,13 @@ h1, h2, h3, h4 {
     cursor: pointer;
 }
 
-/* Aqui são as duas classes para garantir compatibilidade */
-.fornecedor,
+button.del {
+    background: red;
+}
+
 .fornecedor-item {
     background: white;
     padding: 15px;
-    margin-bottom: 12px;
-    border-radius: 6px;
-    box-shadow: 0 0 5px #ccc;
-}
-
-.fornecedor button,
-.fornecedor-item button {
-    margin-right: 10px;
-    margin-top: 5px;
-    padding: 6px 10px;
-}
-
-.produtos {
-    background: #fafafa;
-    margin-top: 10px;
-    padding: 10px;
-    border-left: 3px solid #008cff;
-}
-
-.del {
-    background: #ff3b3b !important;
-    color: white;
-    border: none;
-    cursor: pointer;
+    margin-bottom: 15px;
+    border-radius: 8px;
 }

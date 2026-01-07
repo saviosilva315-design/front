@@ -8,8 +8,13 @@ async function buscar() {
         return;
     }
 
-    const resposta = await fetch(`${API}/produtos`);
-    const produtos = await resposta.json();
+    // Buscar produtos
+    const respostaProdutos = await fetch(`${API}/produtos`);
+    const produtos = await respostaProdutos.json();
+
+    // Buscar fornecedores
+    const respostaFornecedores = await fetch(`${API}/fornecedores`);
+    const fornecedores = await respostaFornecedores.json();
 
     const filtrados = produtos.filter(p =>
         p.nome.toLowerCase().includes(termo.toLowerCase())
@@ -24,12 +29,17 @@ async function buscar() {
     }
 
     filtrados.forEach(p => {
+
+        // Encontrar o fornecedor do produto
+        const fornecedor = fornecedores.find(f => f.id === p.fornecedorid);
+
         const div = document.createElement("div");
         div.className = "fornecedor-item";
 
         div.innerHTML = `
             <strong>${p.nome}</strong><br>
-            Fornecedor ID: ${p.fornecedorid}<br><br>
+            Fornecedor: ${fornecedor ? fornecedor.nome : "Desconhecido"}<br>
+            Contato: ${fornecedor ? fornecedor.contato : "Não informado"}<br><br>
         `;
 
         lista.appendChild(div);

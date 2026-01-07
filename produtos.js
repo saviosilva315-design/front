@@ -30,7 +30,7 @@ async function carregarProdutos() {
 
         div.innerHTML = `
             <strong>${p.nome}</strong><br>
-            Fornecedor: ${p.fornecedorid || "Não informado"}
+            Fornecedor ID: ${p.fornecedorid}
             <br>
             <button class="del" onclick="removerProduto(${p.id})">Excluir</button>
         `;

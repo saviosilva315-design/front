@@ -15,7 +15,6 @@ async function carregarTudo() {
         const div = document.createElement("div");
         div.className = "fornecedor-item";
 
-        // produtos deste fornecedor
         const produtosFornecedor = produtos.filter(p => p.fornecedorid === f.id);
 
         div.innerHTML = `
@@ -31,7 +30,7 @@ async function carregarTudo() {
                         : produtosFornecedor.map(p => 
                             `
                             <div>
-                                • ${p.nome}  
+                                • ${p.nome}
                                 <button class="del" onclick="removerProduto(${p.id})">Excluir</button>
                             </div>
                             `
@@ -50,7 +49,6 @@ async function carregarTudo() {
     });
 }
 
-// Adicionar fornecedor
 async function adicionarFornecedor() {
     const nome = document.getElementById("nome").value.trim();
     const contato = document.getElementById("contato").value.trim();
@@ -72,7 +70,6 @@ async function adicionarFornecedor() {
     carregarTudo();
 }
 
-// Remover fornecedor
 async function removerFornecedor(id) {
     if (!confirm("Deseja excluir este fornecedor e seus produtos?")) return;
 
@@ -81,7 +78,6 @@ async function removerFornecedor(id) {
     carregarTudo();
 }
 
-// Adicionar produto ao fornecedor
 async function adicionarProduto(fornecedorId) {
     const campo = document.getElementById(`produto_${fornecedorId}`);
     const nomeProduto = campo.value.trim();
@@ -101,7 +97,6 @@ async function adicionarProduto(fornecedorId) {
     carregarTudo();
 }
 
-// Remover produto
 async function removerProduto(id) {
     if (!confirm("Excluir este produto?")) return;
 

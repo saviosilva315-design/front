@@ -1,47 +1,33 @@
 const API = "https://meuback-ulyh.onrender.com";
 
-document.addEventListener("DOMContentLoaded", () => {
-    carregarFornecedores();
-});
-
+// Carregar fornecedores ao abrir a página
 async function carregarFornecedores() {
+    const resposta = await fetch(`${API}/fornecedores`);
+    const fornecedores = await resposta.json();
+
     const lista = document.getElementById("listaFornecedores");
-    lista.innerHTML = "Carregando...";
-
-    const resp = await fetch(`${API}/fornecedores`);
-    const fornecedores = await resp.json();
-
     lista.innerHTML = "";
 
     fornecedores.forEach(f => {
         const div = document.createElement("div");
-        div.className = "fornecedor";
+        div.className = "fornecedor-item";
 
         div.innerHTML = `
-            <h3>${f.nome}</h3>
-            <p><strong>Contato:</strong> ${f.contato || "Não informado"}</p>
-
-            <button onclick="mostrarProdutos(${f.id}, this)">
-                Ver produtos
-            </button>
-
-            <button onclick="excluirFornecedor(${f.id})" class="del">
-                Excluir fornecedor
-            </button>
-
-            <div id="produtos-${f.id}" class="produtos"></div>
+            <strong>${f.nome}</strong> – ${f.contato}
+            <button onclick="removerFornecedor(${f.id})">Excluir</button>
         `;
 
         lista.appendChild(div);
     });
 }
 
+// Adicionar fornecedor
 async function adicionarFornecedor() {
     const nome = document.getElementById("nome").value.trim();
     const contato = document.getElementById("contato").value.trim();
 
     if (!nome || !contato) {
-        alert("Preencha nome e contato!");
+        alert("Preencha os campos!");
         return;
     }
 
@@ -53,80 +39,17 @@ async function adicionarFornecedor() {
 
     document.getElementById("nome").value = "";
     document.getElementById("contato").value = "";
-    carregarFornecedores();
-}
-
-async function mostrarProdutos(fornecedorId, botao) {
-    const div = document.getElementById(`produtos-${fornecedorId}`);
-
-    if (div.innerHTML.trim() !== "") {
-        div.innerHTML = "";
-        botao.innerText = "Ver produtos";
-        return;
-    }
-
-    botao.innerText = "Esconder produtos";
-
-    const resp = await fetch(`${API}/produtos`);
-    const produtos = await resp.json();
-
-    const filtrados = produtos.filter(p => p.fornecedorId === fornecedorId);
-
-    let html = "<h4>Produtos:</h4>";
-
-    if (filtrados.length === 0) {
-        html += "<p>Nenhum produto cadastrado.</p>";
-    } else {
-        filtrados.forEach(p => {
-            html += `
-                <p>
-                    • ${p.nome}
-                    <button onclick="excluirProduto(${p.id}, ${fornecedorId})" class="del">
-                        Remover
-                    </button>
-                </p>
-            `;
-        });
-    }
-
-    html += `
-        <input id="novoProduto-${fornecedorId}" placeholder="Nome do produto">
-        <button onclick="adicionarProduto(${fornecedorId})">Adicionar</button>
-    `;
-
-    div.innerHTML = html;
-}
-
-async function adicionarProduto(fornecedorId) {
-    const campo = document.getElementById(`novoProduto-${fornecedorId}`);
-    const nome = campo.value.trim();
-
-    if (!nome) {
-        alert("Digite o nome do produto!");
-        return;
-    }
-
-    await fetch(`${API}/produtos`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nome, fornecedorId })
-    });
-
-    mostrarProdutos(fornecedorId, { innerText: "" });
-}
-
-async function excluirProduto(produtoId, fornecedorId) {
-    await fetch(`${API}/produtos/${produtoId}`, {
-        method: "DELETE"
-    });
-
-    mostrarProdutos(fornecedorId, { innerText: "" });
-}
-
-async function excluirFornecedor(id) {
-    await fetch(`${API}/fornecedores/${id}`, {
-        method: "DELETE"
-    });
 
     carregarFornecedores();
 }
+
+// Remover fornecedor
+async function removerFornecedor(id) {
+    if (!confirm("Deseja excluir este fornecedor?")) return;
+
+    await fetch(`${API}/fornecedores/${id}`, { method: "DELETE" });
+
+    carregarFornecedores();
+}
+
+carregarFornecedores();

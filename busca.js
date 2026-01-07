@@ -1,6 +1,5 @@
 const API = "https://meuback-ulyh.onrender.com";
 
-// Buscar produto
 async function buscar() {
     const termo = document.getElementById("campoBusca").value.trim();
 

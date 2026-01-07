@@ -20,8 +20,8 @@ async function carregarTudo() {
         div.innerHTML = `
             <strong>${f.nome}</strong> – ${f.contato}
             <button class="del" onclick="removerFornecedor(${f.id})">Excluir fornecedor</button>
-            <button onclick="toggleCatalogo(${f.id})">Importar catálogo</button>
 
+            <button onclick="toggleCatalogo(${f.id})">Importar catálogo</button>
             <div id="catalogoBox_${f.id}" style="display:none; margin-top:10px;">
                 <textarea id="catalogoTexto_${f.id}" placeholder="Cole aqui o catálogo, um produto por linha..." 
                 style="width:90%;height:120px;"></textarea>
@@ -29,8 +29,14 @@ async function carregarTudo() {
                 <button onclick="importarCatalogo(${f.id})">Importar</button>
             </div>
 
-            <div class="produtos">
-                <h4>Produtos:</h4>
+            <h4 style="display:flex;align-items:center;gap:10px;margin-top:15px;">
+                Produtos:
+                <button onclick="toggleProdutos(${f.id})" id="toggleBtn_${f.id}">
+                    Ocultar
+                </button>
+            </h4>
+
+            <div class="produtos" id="produtosArea_${f.id}">
                 <div id="produtos_${f.id}">
                     ${
                         produtosFornecedor.length === 0
@@ -57,7 +63,21 @@ async function carregarTudo() {
     });
 }
 
-// Mostrar/ocultar caixa
+// Mostrar/ocultar área de produtos
+function toggleProdutos(id) {
+    const area = document.getElementById(`produtosArea_${id}`);
+    const botao = document.getElementById(`toggleBtn_${id}`);
+
+    if (area.style.display === "none") {
+        area.style.display = "block";
+        botao.textContent = "Ocultar";
+    } else {
+        area.style.display = "none";
+        botao.textContent = "Mostrar";
+    }
+}
+
+// Mostrar/ocultar caixa de catálogo
 function toggleCatalogo(id) {
     const box = document.getElementById(`catalogoBox_${id}`);
     box.style.display = box.style.display === "none" ? "block" : "none";
@@ -80,14 +100,14 @@ async function importarCatalogo(fornecedorId) {
     const produtosResposta = await fetch(`${API}/produtos`);
     const produtosExistentes = await produtosResposta.json();
 
-    const produtosFornecedor = produtosExistentes
+    const produtosFornecedorExistentes = produtosExistentes
         .filter(p => p.fornecedorid === fornecedorId)
         .map(p => p.nome.toLowerCase());
 
     let inseridos = 0;
 
     for (const nome of linhas) {
-        if (!produtosFornecedor.includes(nome.toLowerCase())) {
+        if (!produtosFornecedorExistentes.includes(nome.toLowerCase())) {
             await fetch(`${API}/produtos`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -101,8 +121,6 @@ async function importarCatalogo(fornecedorId) {
     textarea.value = "";
     carregarTudo();
 }
-
-
 
 async function adicionarFornecedor() {
     const nome = document.getElementById("nome").value.trim();

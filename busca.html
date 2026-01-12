@@ -1,28 +1,33 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <title>Buscar Produto</title>
-    <link rel="stylesheet" href="fornecedores.css">
+  <meta charset="UTF-8">
+  <title>Buscar Produto</title>
+  <link rel="stylesheet" href="fornecedores.css">
 </head>
 <body>
 
-    <h1>Buscar Produto</h1>
+  <h1>Buscar Produto</h1>
 
-    <nav style="background:#008cff;padding:10px;">
-        <a href="fornecedores.html" style="color:white;font-size:18px;text-decoration:none;">
-            Voltar
-        </a>
-    </nav>
+  <nav style="background:#008cff;padding:10px;">
+    <a href="fornecedores.html" style="color:white;font-size:18px;text-decoration:none;">
+      Voltar
+    </a>
+  </nav>
 
-    <div class="form">
-        <input id="campoBusca" placeholder="Nome do produto...">
-        <button onclick="buscar()">Buscar</button>
-    </div>
+  <div class="form">
+    <input id="campoBusca" placeholder="Nome do produto...">
+    <button onclick="buscar()">Buscar</button>
+  </div>
 
-    <h2>Resultados</h2>
-    <div id="resultadoBusca"></div>
+  <div class="form">
+    <textarea id="mensagemBusca" placeholder="Digite a mensagem para enviar a TODOS os fornecedores encontrados..." style="width:420px;height:90px;"></textarea>
+    <button onclick="enviarParaTodosResultados()">Enviar para todos</button>
+  </div>
 
-    <script src="busca.js"></script>
+  <h2>Resultados</h2>
+  <div id="resultadoBusca"></div>
+
+  <script src="busca.js"></script>
 </body>
 </html>

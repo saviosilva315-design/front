@@ -21,12 +21,6 @@ async function carregarTudo() {
       <strong>${f.nome}</strong> – ${f.contato || ""}
       <button class="del" onclick="removerFornecedor(${f.id})">Excluir fornecedor</button>
 
-      <div style="margin-top:10px;">
-        <textarea id="msg_${f.id}" placeholder="Digite a mensagem para este fornecedor..." style="width:90%;height:70px;"></textarea>
-        <br>
-        <button onclick="enviarMensagemFornecedor(${f.id})">Enviar mensagem</button>
-      </div>
-
       <button onclick="toggleCatalogo(${f.id})" style="margin-top:10px;">Importar catálogo</button>
       <div id="catalogoBox_${f.id}" style="display:none; margin-top:10px;">
         <textarea id="catalogoTexto_${f.id}" placeholder="Cole aqui o catálogo, um produto por linha..."
@@ -178,29 +172,6 @@ async function removerProduto(id) {
   await fetch(`${API}/produtos/${id}`, { method: "DELETE" });
 
   carregarTudo();
-}
-
-// ✅ NOVO: enviar mensagem individual (editável)
-async function enviarMensagemFornecedor(fornecedorId) {
-  const texto = document.getElementById(`msg_${fornecedorId}`).value.trim();
-  if (!texto) {
-    alert("Digite a mensagem antes de enviar.");
-    return;
-  }
-
-  const resp = await fetch(`${API}/digisac/send-fornecedor`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ fornecedorId, text: texto })
-  });
-
-  const json = await resp.json();
-  if (!resp.ok || !json.ok) {
-    alert(json.erro || "Falha ao enviar.");
-    return;
-  }
-
-  alert("Mensagem enviada com sucesso!");
 }
 
 carregarTudo();
